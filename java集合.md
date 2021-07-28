@@ -28,7 +28,7 @@ ps：
 
 - 重写后的代码如下：（选自尚硅谷视频）
 
-  ![image-20210726154123528](C:\Users\acer-pc\AppData\Roaming\Typora\typora-user-images\image-20210726154123528.png)
+  ![image-20210726154123528](./picture/java集合\image-20210726154123528.png)
 
 4. List和Set集合都可调用contains方法。
 
@@ -78,7 +78,7 @@ ps：
 
 
 
-![image-20210726155858790](C:\Users\acer-pc\AppData\Roaming\Typora\typora-user-images\image-20210726155858790.png)
+![image-20210726155858790](./picture/java集合\image-20210726155858790.png)
 
 代码演示
 
@@ -193,7 +193,7 @@ System.out.println(coll.hashCode());
 
 ps：此时输出的array的类型并不是固定的，因为是一个Object类型的数组
 
-![image-20210726164046114](C:\Users\acer-pc\AppData\Roaming\Typora\typora-user-images\image-20210726164046114.png)
+![image-20210726164046114](./picture/java集合\image-20210726164046114.png)
 
  
 
@@ -205,7 +205,7 @@ ps：
 
 - 假如数组是一个整形数组，在转化的时候必须要是Integer包装类型，而不能是int类型。
 
-![image-20210726164541257](C:\Users\acer-pc\Desktop\办公\自己写的资料\image-20210726164541257.png)
+![image-20210726164541257](./picture/java集合\image-20210726164541257.png)
 
 - 改写成
 
@@ -257,7 +257,7 @@ ps：在集合后面的<>似乎可以省略掉。
 
 ## 2.10 其他常用方法
 
-![image-20210728111709934](C:\Users\acer-pc\AppData\Roaming\Typora\typora-user-images\image-20210728111709934.png)
+![image-20210728111709934](./picture/java集合\image-20210728111709934.png)
 
 增：add(Object obj)
 删：remove(int index) / remove(Object obj)
