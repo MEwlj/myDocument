@@ -10,7 +10,23 @@
 *          |----Set接口：存储无序的、不可重复的数据   -->高中讲的“集合”
 *              |----HashSet、LinkedHashSet、TreeSet
 
-# 2.常用方法
+# 2.Link常用方法
+
+常用的15个抽象方法（实现自Collection的抽象方法），最常用的以下5个。这儿不包括迭代器方法。
+
+1. add(Object e):元素e添加到集合coll内
+2. size():获取添加元素的个数
+3. addAll():将coll1集合中的元素添加到当前的集合中
+
+```java
+Collection coll1 = new ArrayList();
+coll1.add(456);
+coll1.add("CC");
+coll.addAll(coll1);
+```
+
+4. isEmpty():判断当前集合是否为空（观察size()是否为0）
+5. clear():清空集合元素，并不是给coll赋值为null，而是直接清空集合元素。
 
 ## 2.1 contains(Object obj) 
 
@@ -255,7 +271,7 @@ ps：在集合后面的<>似乎可以省略掉。
         System.out.println(arr2.size());//2
 ```
 
-## 2.10 其他常用方法
+## 2.10 其他常用方法（List特有，Set没有）
 
 ![image-20210728111709934](./picture/java集合\image-20210728111709934.png)
 
@@ -268,3 +284,217 @@ ps：在集合后面的<>似乎可以省略掉。
 遍历：① Iterator迭代器方式
      ② 增强for循环
      ③ 普通的循环
+
+# 3.Set接口
+
+## 3.1 特性
+
+- Set接口中没额外定义新的方法，使用的都是Collection中声明过的方法。因为是无序的，所以没有诸如List接口的get()方法和add()的重载方法。
+
+![](C:\Users\acer-pc\Desktop\办公\自己写的资料\picture\java集合\Set抽象方法.png)
+
+- 存储的数据特点：无序的、不可重复的元素
+
+  1. 无序性：不等于随机性。存储的数据在底层数组中并非照数组索引的顺序添加，而是根据数据的哈希值决定的。
+  2. 不可重复性：保证添加的元素照equals()判断时，不能返回true.即：相同的元素只能添加一个。
+
+- 元素添加过程：(以HashSet为例)
+
+  我们向HashSet中添加元素a,首先调用元素a所在类的hashCode()方法，计算元素a的哈希值，此哈希值接着通过某种算法计算出在HashSet底层数组中的存放位置（即为：索引位置，判断数组此位置上是否已经元素：
+      如果此位置上没其他元素，则元素a添加成功。 --->情况1
+      如果此位置上其他元素b(或以链表形式存在的多个元素，则比较元素a与元素b的hash值：
+          如果hash值不相同，则元素a添加成功。--->情况2
+          如果hash值相同，进而需要调用元素a所在类的equals()方法：
+                 equals()返回true,元素a添加失败
+                 equals()返回false,则元素a添加成功。--->情况3
+
+- HashSet底层：数组+链表的结构。（前提：jdk7)
+
+  对于添加成功的情况2和情况3而言：元素a 与已经存在指定索引位置上数据以链表的方式存储。
+  jdk 7 :元素a放到数组中，指向原来的元素。
+  jdk 8 :原来的元素在数组中，指向元素a
+  总结：七上八下
+
+
+
+ps：
+
+- 哈希值是通过对象的属性来计算的。相同的属性计算出来的哈希值是一样的。
+- Object对象的hashCode()方法（重写前的方法）计算出来的哈希值用于表示对象在内存的存放位置。且计算过程是随机计算的。假如说new了两个对象，且这两个对象都有相同的属性值，但是随机计算出来的哈希值是不同的。
+- 属性不同的两个对象，有可能计算出相同的哈希值，因此还需要equals进行判断。
+- 对于存放在Set容器中的对象，对应的类一定要重写equals()和hashCode()方法。String类型的变量已经自动重写了两个方法。
+- 详情参考[尚硅谷视频](https://www.bilibili.com/video/BV1Kb411W75N?p=537)
+
+# 4. Map
+
+## 4.1 HashMap
+
+HashMap的底层：
+
+- 数组+链表  （jdk7及之前)
+
+- 数组+链表+红黑树 （jdk 8)
+
+
+
+## 4.2 常用方法
+
+```java
+添加、删除、修改操作：
+Object put(Object key,Object value)：将指定key-value添加到(或修改)当前map对象中
+void putAll(Map m):将m中的所有key-value对存放到当前map中
+Object remove(Object key)：移除指定key的key-value对，并返回value
+void clear()：清空当前map中的所有数据
+元素查询的操作：
+Object get(Object key)：获取指定key对应的value
+boolean containsKey(Object key)：是否包含指定的key
+boolean containsValue(Object value)：是否包含指定的value
+int size()：返回map中key-value对的个数
+boolean isEmpty()：判断当前map是否为空
+boolean equals(Object obj)：判断当前map和参数对象obj是否相等
+元视图操作的方法：
+Set keySet()：返回所有key构成的Set集合
+Collection values()：返回所有value构成的Collection集合
+Set entrySet()：返回所有key-value对构成的Set集合
+
+*总结：常用方法：
+* 添加：put(Object key,Object value)
+* 删除：remove(Object key)
+* 修改：put(Object key,Object value)
+* 查询：get(Object key)
+* 长度：size()
+* 遍历：keySet() / values() / entrySet()
+```
+
+```java
+   /*
+ 元素查询的操作：
+ Object get(Object key)：获取指定key对应的value
+ boolean containsKey(Object key)：是否包含指定的key
+ boolean containsValue(Object value)：是否包含指定的value
+ int size()：返回map中key-value对的个数
+ boolean isEmpty()：判断当前map是否为空
+ boolean equals(Object obj)：判断当前map和参数对象obj是否相等
+     */
+    @Test
+    public void test4(){
+        Map map = new HashMap();
+        map.put("AA",123);
+        map.put(45,123);
+        map.put("BB",56);
+        // Object get(Object key)
+        System.out.println(map.get(45));
+        //containsKey(Object key)
+        boolean isExist = map.containsKey("BB");
+        System.out.println(isExist);
+
+        isExist = map.containsValue(123);
+        System.out.println(isExist);
+
+        map.clear();
+
+        System.out.println(map.isEmpty());
+
+    }
+
+    /*
+     添加、删除、修改操作：
+ Object put(Object key,Object value)：将指定key-value添加到(或修改)当前map对象中
+ void putAll(Map m):将m中的所有key-value对存放到当前map中
+ Object remove(Object key)：移除指定key的key-value对，并返回value
+ void clear()：清空当前map中的所有数据
+     */
+    @Test
+    public void test3(){
+        Map map = new HashMap();
+        //添加
+        map.put("AA",123);
+        map.put(45,123);
+        map.put("BB",56);
+        //修改
+        map.put("AA",87);
+
+        System.out.println(map);
+
+        Map map1 = new HashMap();
+        map1.put("CC",123);
+        map1.put("DD",123);
+
+        map.putAll(map1);
+
+        System.out.println(map);
+
+        //remove(Object key)
+        Object value = map.remove("CC");
+        System.out.println(value);
+        System.out.println(map);
+
+        //clear()
+        map.clear();//与map = null操作不同
+        System.out.println(map.size());
+        System.out.println(map);
+    }
+```
+
+
+
+- Map中的key:无序的、不可重复的，使用Set存储所的key  ---> key所在的类要重写equals()和hashCode() （以HashMap为例)
+- Map中的value:无序的、可重复的，使用Collection存储所的value --->value所在的类要重写equals()
+- 一个键值对：key-value构成了一个Entry对象。
+- Map中的entry:无序的、不可重复的，使用Set存储所的entry
+
+```java
+    /*
+ 元视图操作的方法：
+ Set keySet()：返回所有key构成的Set集合
+ Collection values()：返回所有value构成的Collection集合
+ Set entrySet()：返回所有key-value对构成的Set集合
+
+     */
+
+
+    @Test
+    public void test5(){
+        Map map = new HashMap();
+        map.put("AA",123);
+        map.put(45,1234);
+        map.put("BB",56);
+
+        //遍历所有的key集：keySet()
+        Set set = map.keySet();
+            Iterator iterator = set.iterator();
+            while(iterator.hasNext()){
+                System.out.println(iterator.next());
+        }
+        System.out.println();
+        //遍历所有的value集：values()
+        Collection values = map.values();
+        for(Object obj : values){
+            System.out.println(obj);
+        }
+        System.out.println();
+        //遍历所有的key-value
+        //方式一：entrySet()
+        Set entrySet = map.entrySet();
+        Iterator iterator1 = entrySet.iterator();
+        while (iterator1.hasNext()){
+            Object obj = iterator1.next();
+            //entrySet集合中的元素都是entry
+            Map.Entry entry = (Map.Entry) obj;
+            System.out.println(entry.getKey() + "---->" + entry.getValue());
+
+        }
+        System.out.println();
+        //方式二：
+        Set keySet = map.keySet();
+        Iterator iterator2 = keySet.iterator();
+        while(iterator2.hasNext()){
+            Object key = iterator2.next();
+            Object value = map.get(key);
+            System.out.println(key + "=====" + value);
+
+        }
+
+    }
+```
+
