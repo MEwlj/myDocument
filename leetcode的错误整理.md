@@ -471,3 +471,125 @@ int min = Integer.MAX_VALUE;
 ```
 
 在dp中不断更新min值。这种写法克服了arr[i] = Math.min(arr[i - j] + 1,arr[i])中，首次给arr[i]赋值时，arr[i]值为0的缺陷。
+
+
+
+## 17 电话号码的数字组合
+
+题目：
+
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+![img](https://assets.leetcode-cn.com/aliyun-lc-upload/original_images/17_telephone_keypad.png)
+
+代码演示：
+
+```java
+class Solution {
+    List<String> lists = new ArrayList<>();
+    Map<Character,String> map;
+    public List<String> letterCombinations(String digits) {
+        if((digits.isEmpty())||(digits.trim().isEmpty())){
+            return lists;
+        }
+        map = new HashMap<>();
+        
+        map.put('2',"abc");
+        map.put('3',"def");
+        map.put('4',"ghi");
+        map.put('5',"jkl");
+        map.put('6',"mno");
+        map.put('7',"pqrs");
+        map.put('8',"tuv");
+        map.put('9',"wxyz");
+        fun("",0,digits);
+        return lists;
+    }
+
+    public void fun(String str,int index,String digits){
+        if(str.length() == digits.length()){
+            lists.add(str);
+            return;
+        }
+        Character c = digits.charAt(index);
+        String tmp = map.get(c);
+        for(int i = 0;i < tmp.length();i++){
+           fun(str + tmp.charAt(i),index + 1,digits);
+
+        }
+    }
+}
+```
+
+与之前的题不同的是，该题考查的是不同集合之间，从每个集合各自抽一个数来组成新集合，之前的题都是从一个大集合中找子集合。
+
+
+
+## 454 [四数相加 II]
+
+题目：给定四个包含整数的数组列表 A , B , C , D ,计算有多少个元组 (i, j, k, l) ，使得 A[i] + B[j] + C[k] + D[l] = 0。
+
+为了使问题简单化，所有的 A, B, C, D 具有相同的长度 N，且 0 ≤ N ≤ 500 。所有整数的范围在 -2^28 到 2^28 - 1 之间，最终结果不会超过 2^31 - 1 。
+
+示例代码：
+
+```java
+class Solution {
+    int count = 0;
+
+    public int fourSumCount(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
+        Map<Integer,Integer> map = new HashMap<>();
+        for(int i = 0;i < nums1.length;i++){
+            for(int j = 0;j < nums2.length;j++){
+                int tmp = nums1[i] + nums2[j];
+                if(map.containsKey(tmp)){
+                    map.put(tmp,map.get(tmp) + 1);
+                }else{
+                    map.put(tmp,1);
+                }
+            }
+        }
+
+        for(int i = 0;i < nums3.length;i++){
+            for(int j = 0;j < nums4.length;j++){
+                int tmp = nums3[i] + nums4[j];
+                if(map.containsKey(-tmp)){
+                    count += map.get(-tmp);
+                }
+            }
+        }
+
+        return count;
+    }
+
+    
+}
+```
+
+该题很可能可以用第17题的思路来做，有4个长度相同的组合，从买个组合各自取一个数作为新的组合，若新组合之和为零，则计数一次。但是问题就在于不知道如何把这4个数组放到同一个集合内。
+
+
+
+根据题解：
+
+1. 一采用分为两组，HashMap 存一组，另一组和 HashMap 进行比对。
+
+2. 这样的话情况就可以分为三种：
+
+- HashMap 存一个数组，如 A。然后计算三个数组之和，如 BCD。时间复杂度为：O(n)+O(n^3)，得到 O(n^3).
+- HashMap 存三个数组之和，如 ABC。然后计算一个数组，如 D。时间复杂度为：O(n^3)+O(n)，得到 O(n^3).
+- HashMap存两个数组之和，如AB。然后计算两个数组之和，如 CD。时间复杂度为：O(n^2)+O(n^2)，得到 O(n^2).
+
+3. 根据第二点我们可以得出要存两个数组算两个数组。
+
+4. 我们以存 AB 两数组之和为例。首先求出 A 和 B 任意两数之和 sumAB，以 sumAB 为 key，sumAB 出现的次数为 value，存入 hashmap 中。
+   然后计算 C 和 D 中任意两数之和的相反数 sumCD，在 hashmap 中查找是否存在 key 为 sumCD。
+   算法时间复杂度为 O(n2)。
+
+## 15 三数之和
+
+题目：给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
+
+思路：此题可以照第40题的思路来做，仅仅需要改一个条件就行了，但是在测试用例时，加入了一个非常长的测试用例，导致用第40题的思路会超时，因此得换成用hashmap的办法来做，空间换时间。
