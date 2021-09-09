@@ -233,6 +233,25 @@ for epoch in range(100):
 - model.to(device)意思是把整个模型的可训练参数和缓存转换成cuda tensor，把cpu建立的权重迁移到gpu上。
 - inputs.to(device),target.to(device)意思是把需要计算的tensor也迁移到gpu上，主要是输入和输出，比注意model的可训练参数和需要计算的tensor必须要在同一块显卡上。
 
+
+
+### 1.12 torch.optim.lr_scheduler()
+
+`torch.optim.lr_scheduler`模块提供了一些根据epoch训练次数来调整学习率（learning rate）的方法。一般情况下我们会设置随着epoch的增大而逐渐减小学习率从而达到更好的训练效果。
+
+参考自[csdn](https://blog.csdn.net/qyhaill/article/details/103043637)
+
+
+
+### 1.13 torch.nn.MarginRankingLoss()
+
+- 功能： 计算两个向量之间的相似度，当两个向量之间的距离大于margin，则loss为正，小于margin，loss为0。
+- transE模型用的评分函数就是这个
+
+参考自[csdn](https://blog.csdn.net/qq_38813456/article/details/110083290)
+
+
+
 ## 2. 较为常用
 
 ### 2.1 register_parameter(name, param)
@@ -328,3 +347,139 @@ print(torch.FloatTensor([1,2]))
 3. torch.matmul()也是一种类似于矩阵相乘操作的tensor联乘操作。但是它可以利用python 中的广播机制，处理一些维度不同的tensor结构进行相乘操作。
 
 > https://www.jianshu.com/p/e277f7fc67b3
+
+
+
+### 2.7 torch.norm()
+
+```
+torch.norm(input,p="fro",dim=None)
+```
+
+- torch.norm是对输入的Tensor求范数
+- input (Tensor) – 输入张量
+- p (float,optional) – 范数计算中的幂指数值
+- dim (int) – 缩减的维度
+
+参考自[csdn](https://blog.csdn.net/goodxin_ie/article/details/84657975)
+
+
+
+### 2.8 torch.repeat()
+
+torch.repeat用法与np.tile()类似
+
+```
+import torch
+x = torch.tensor([1, 2, 3])
+print(x.repeat(4, 1))
+print("###################################")
+print(x.repeat(4, 2))
+
+```
+
+运行结果为
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20191216204552555.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQyMjEyNjY=,size_16,color_FFFFFF,t_70)
+
+参考自[csdn](https://blog.csdn.net/appleml/article/details/103569615)
+
+
+
+### 2.9 torch.expand_as()
+
+据说用法与expand()类似，把一个tensor变成和函数括号内一样形状的tensor
+
+```
+>>> x = torch.tensor([[1], [2], [3]])
+>>> x.size()
+torch.Size([3, 1])
+>>> x.expand(3, 4)
+tensor([[ 1,  1,  1,  1],
+        [ 2,  2,  2,  2],
+        [ 3,  3,  3,  3]])
+>>> x.expand(-1, 4)   # -1 means not changing the size of that dimension
+tensor([[ 1,  1,  1,  1],
+        [ 2,  2,  2,  2],
+        [ 3,  3,  3,  3]])
+```
+
+参考自[csdn](https://blog.csdn.net/lcqin111/article/details/89765081)
+
+
+
+### 2.10 torch.unique()
+
+```
+import torch
+ 
+x = torch.tensor([4,0,1,2,1,2,3])#生成一个tensor,作为实验输入
+print(x)
+ 
+out = torch.unique(x) #所有参数都设置为默认的
+print(out)#将处理结果打印出来
+#结果如下：
+#tensor([0, 1, 2, 3, 4])   #将x中的不重复元素挑了出来，并且默认为生序排列
+ 
+out = torch.unique(x,sorted=False)#将默认的生序排列改为False
+print(out)
+#输出结果如下：
+#tensor([3, 2, 1, 0, 4])  #将x中的独立元素找了出来，就按照原始顺序输出
+ 
+out = torch.unique(x,return_inverse=True)#将原始数据中的每个元素在新生成的独立元素张量中的索引输出
+print(out)
+#输出结果如下：
+#(tensor([0, 1, 2, 3, 4]), tensor([4, 0, 1, 2, 1, 2, 3]))  #第一个张量是排序后输出的独立张量，第二个结果对应着原始数据中的每个元素在新的独立无重复张量中的索引，比如x[0]=4,在新的张量中的索引为4, x[1]=0,在新的张量中的索引为0，x[6]=3,在新的张量中的索引为3
+ 
+out = torch.unique(x,return_counts=True) #返回每个独立元素的个数
+print(out)
+#输出结果如下
+#(tensor([0, 1, 2, 3, 4]), tensor([1, 2, 2, 1, 1]))  #0这个元素在原始数据中的数量为1,1这个元素在原始数据中的数量为2
+```
+
+参考自[csdn](https://blog.csdn.net/t20134297/article/details/108235355)
+
+
+
+### 2.11 torch.spares_coo_tensor()
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201111193328567.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZsdWlkX3JheQ==,size_16,color_FFFFFF,t_70#pic_center)
+
+```
+torch.spares_coo_tensor(indices, values, siez=None,*, dtype=None, requires_grad=False)->Tensor
+
+```
+
+- indices：此参数是指定非零元素所在的位置，也就是行和列，所以此参数应该是一个二维的数组，当然它可以是很多格式（ist, tuple, NumPy ndarray, scalar, and other types. ）第一维指定了所有非零数所在的行数，第二维指定了所有非零元素所在的列数。例如indices=[[1, 4, 6], [3, 6, 7]]表示我们稀疏矩阵中(1, 3),(4, 6), (6, 7)几个位置是非零的数所在的位置。
+- values：此参数指定了非零元素的值，所以此矩阵长度应该和上面的indices一样长也可以是很多格式（list, tuple, NumPy ndarray, scalar, and other types.）。例如``values=[1, 4, 5]表示上面的三个位置非零数分别为1, 4, 5。
+- size：指定了稀疏矩阵的大小，例如size=[10, 10]表示矩阵大小为10 × 10 10\times 1010×10，此大小最小应该足以覆盖上面非零元素所在的位置，如果不给定此值，那么默认是生成足以覆盖所有非零值的最小矩阵大小。
+- `dtype`：指定返回tensor中数据的类型，如果不指定，那么采取values中数据的类型。
+- `device`：指定创建的tensor在cpu还是cuda上。
+- `requires_grad`：指定创建的tensor需不需要梯度信息，默认为`False`
+
+示例代码
+
+```
+import torch
+
+indices = torch.tensor([[4, 2, 1], [2, 0, 2]])
+values = torch.tensor([3, 4, 5], dtype=torch.float32)
+x = torch.sparse_coo_tensor(indices=indices, values=values, size=[5, 5])
+x
+```
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201111195443623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZsdWlkX3JheQ==,size_16,color_FFFFFF,t_70#pic_center)
+
+参考自[csdn](https://blog.csdn.net/Fluid_ray/article/details/109629482)
+
+
+
+### 2.12 tensor.T和tensor.t()
+
+都表示为对tensor的转置。
+
+-  **.t()** 是 **.transpose**函数的简写版本，但只能对2维以下的tensor进行**转置**。
+-  **.T** 是 **.permute** 函数的简化版本，不仅可以操作2维tensor，甚至可以对n维tensor进行转置。当然当维数n=2时，**.t()** 与 **.T** 效果是一样的。
+
+参考自[csdn](https://blog.csdn.net/lollows/article/details/105017813)
+
