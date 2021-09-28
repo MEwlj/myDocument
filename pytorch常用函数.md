@@ -483,3 +483,150 @@ x
 
 参考自[csdn](https://blog.csdn.net/lollows/article/details/105017813)
 
+
+
+### 2.13 F.normalize
+
+```
+torch.nn.functional.normalize(input, p=2, dim=1, eps=1e-12, out=None)
+```
+
+1. 输入为一维tensor
+
+```
+a = torch.Tensor([1,2,3])
+
+torch.nn.functional.normalize(a, dim=0)
+
+tensor([0.2673, 0.5345, 0.8018])
+
+```
+
+可以看到每一个数字都除以了这个Tensor的范数：$\sqrt{1^2+2^2+3^2}=3.7416$
+
+2. 输入为二维tensor
+
+```
+b = torch.Tensor([[1,2,3], [4,5,6]])
+
+torch.nn.functional.normalize(b, dim=0)
+
+tensor([[0.2425, 0.3714, 0.4472],
+        [0.9701, 0.9285, 0.8944]])
+
+```
+
+因为dim=0，所以是对列操作。每个数除以所在列的范数。第一列的范数为$\sqrt{1^2+4^2}=4.1231$
+
+
+
+内容节选自[csdn](https://blog.csdn.net/ECNU_LZJ/article/details/103653133?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522163248324716780255227204%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=163248324716780255227204&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-1-103653133.first_rank_v2_pc_rank_v29&utm_term=torch.nn.functional.normalize&spm=1018.2226.3001.4187)
+
+
+
+### 2.14 torch.view
+
+1. torch.view()类似于numpy中的resize(),返回的tensor和传入的tensor共享内存，意思就是修改其中一个，数据都会变.
+2. torch.view()的形状可以输入-1，意思是计算机自动帮我们计算对应的数字
+
+```
+import torch
+a = torch.arange(0,20)		#此时a的shape是(1,20)
+a.view(4,5).shape		#输出为(4,5)
+a.view(-1,5).shape		#输出为(4,5)
+a.view(4,-1).shape		#输出为(4,5)
+```
+
+内容摘抄自[博客园](https://www.cnblogs.com/MartinLwx/p/10543604.html)
+
+
+
+### 2.15 torch.sum
+
+torch.sum()对输入的tensor数据的某一维度求和，一共两种用法
+
+1. ```
+   １．torch.sum(input, dtype=None)
+   ２．torch.sum(input, list: dim, bool: keepdim=False, dtype=None) → Tensor
+   　
+   input:输入一个tensor
+   dim:要求和的维度，可以是一个列表
+   keepdim:求和之后这个dim的元素个数为１，所以要被去掉，如果要保留这个维度，则应当keepdim=True
+   #If keepdim is True, the output tensor is of the same size as input except in the dimension(s) dim where it is of size 1. 
+   ```
+
+2. ```
+   a = torch.ones((2, 3))
+   print(a):
+   tensor([[1, 1, 1],
+    		[1, 1, 1]])
+   
+   a1 =  torch.sum(a)
+   a2 =  torch.sum(a, dim=0)
+   a3 =  torch.sum(a, dim=1)
+   
+   print(a)
+   print(a1)
+   print(a2)
+   ```
+
+输出结果为
+
+```
+tensor(6.)
+tensor([2., 2., 2.])
+tensor([3., 3.])
+```
+
+选自[csdn](https://blog.csdn.net/qq_39463274/article/details/105145029)
+
+
+
+### 2.16 torch.narrow
+
+1. 从 input 张量中返回一个范围限制后的 张量，范围限制条件为：沿维度dim 从 start 到start+length 的范围区间(闭区间)，类似于数组切片用法，返回的张量与 input 张量共享相同储存基础
+   参数
+
+2. input(Tensor) ，需处理的张量；
+3. dim(int)，沿着限制的轴；
+4. start(int) ，张量起始点；
+   length(int) ，缩窄长度;
+
+```
+rand_float = torch.randn((5,3))# 随机生成 5*3数据
+rand_float
+>>>
+tensor([[-0.4972, -0.1363, -1.8918],
+        [ 1.2994, -1.0091,  0.1862],
+        [ 0.5525,  1.3073,  1.3741],
+        [-1.7242, -0.3593, -0.7546],
+        [-0.3328,  0.3333,  0.0096]])
+        
+rand_float.narrow(0,1,2)# 沿第一维度开始，第一行为开始，长度为2
+>>>
+tensor([[ 1.2994, -1.0091,  0.1862],
+        [ 0.5525,  1.3073,  1.3741]])
+
+```
+
+选自[csdn](https://blog.csdn.net/weixin_42512684/article/details/110789511)，内容参考自[博客园](https://www.cnblogs.com/qinduanyinghua/p/11862641.html)
+
+
+
+### 2.17 F.pad
+
+**torch.nn.functional.pad(input, pad, mode='constant', value=0)**
+
+- pad
+  扩充维度，用于预先定义出某维度上的扩充参数
+- mode
+  扩充方法，’constant‘, ‘reflect’ or ‘replicate’三种模式，分别表示常量，反射，复制
+- value
+  扩充时指定补充值，但是value只在mode='constant’有效，即使用value填充在扩充出的新维度位置，而在’reflect’和’replicate’模式下，value不可赋值
+
+**当pad只有两个参数时，仅改变最后一个维度**
+
+![img](https://pic3.zhimg.com/80/v2-ff4e9a64d32fb17d7a770268582a970a_720w.jpg)
+
+摘抄自[知乎](https://zhuanlan.zhihu.com/p/358599463)
+
