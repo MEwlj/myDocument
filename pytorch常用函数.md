@@ -252,6 +252,35 @@ for epoch in range(100):
 
 
 
+### 1.14 nn.LSTMCell
+
+```
+import torch
+from torch import nn
+
+# 一层的LSTM计算单元,输入的feature_len=100,隐藏单元和记忆单元hidden_len=20
+cell = nn.LSTMCell(input_size=100, hidden_size=20)
+
+# 初始化隐藏单元h和记忆单元C,取batch=3
+h = torch.zeros(3, 20)
+C = torch.zeros(3, 20)
+
+# 这里是seq_len=10个时刻的输入,每个时刻shape都是[batch,feature_len]
+xs = [torch.randn(3, 100) for _ in range(10)]
+
+# 对每个时刻,传入输入x_t和上个时刻的h_{t-1}和C_{t-1}
+for xt in xs:
+    h, C = cell(xt, (h, C))
+
+print(h.shape)  # torch.Size([3, 20])
+print(C.shape)  # torch.Size([3, 20])
+
+```
+
+[csdn](https://blog.csdn.net/SHU15121856/article/details/104448734)
+
+
+
 ## 2. 较为常用
 
 ### 2.1 register_parameter(name, param)
@@ -348,6 +377,62 @@ print(torch.FloatTensor([1,2]))
 
 > https://www.jianshu.com/p/e277f7fc67b3
 
+4. torch.bmm
+
+```
+torch.bmm(input, mat2, out=None) → Tensor
+```
+
+ torch.bmm()是tensor中的一个相乘操作，类似于矩阵中的A*B。
+
+参数：
+
+input，mat2：两个要进行相乘的tensor结构，两者必须是3D维度的
+
+output：输出结果
+
+并且相乘的两个矩阵，要满足一定的维度要求：input（p,m,n) * mat2(p,n,a) ->output(p,m,a)。这个要求，可以类比于矩阵相乘。前一个矩阵的列等于后面矩阵的行才可以相乘。
+————————————————
+版权声明：本文为CSDN博主「Foneone」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/foneone/article/details/103876519
+
+
+
+补充：
+
+1. 矩阵相乘有`torch.mm(a, b)`和`torch.matmul(a, b)`两个函数。
+
+   前一个是针对二维矩阵，后一个是高维。当`torch.mm(a, b)`用于大于二维时将报错。
+
+2. matmul对于维数相同的张量
+
+   A.shape =（b,m,n)；B.shape = (b,n,k)
+   numpy.matmul(A,B) 结果shape为(b,m,k)
+
+   要求第一维度相同，后两个维度能满足矩阵相乘条件。
+
+3. matmul对于维数不同的张量
+
+   比如 A.shape =（**m,n**)； B.shape = (b,**n,k**)； C.shape=(**k,l**)
+
+   numpy.matmul(A,B) 结果shape为(b,m,k)
+
+   numpy.matmul(B,C) 结果shape为(b,n,l)
+
+   2D张量要和3D张量的后两个维度满足矩阵相乘条件。
+
+摘抄自[csdn](https://blog.csdn.net/qq_34243930/article/details/106889639)
+
+有一个说法，对于高纬数组，乘法只作用在最后两维（看最后两维是否可以进行乘法），这一点在torch.mutmul验证过了，是正确的，比如说
+
+```
+torch.matmul(att,tail).squeeze(2)
+#att:tensor:(1024,5,1,50),tail:tensor:(1024,5,50,100)
+#结果为tensor：（1024,5,100）
+```
+
+[知乎](https://zhuanlan.zhihu.com/p/203085276)
+
 
 
 ### 2.7 torch.norm()
@@ -383,6 +468,23 @@ print(x.repeat(4, 2))
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191216204552555.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQyMjEyNjY=,size_16,color_FFFFFF,t_70)
 
 参考自[csdn](https://blog.csdn.net/appleml/article/details/103569615)
+
+这个函数如函数名一样，是复制函数，参数表示把这个tensor复制成多少个，参数以1,2,3位来解释：
+
+假设a是一个tensor，那么把a看作最小单元：
+
+a.repeat(2)表示在复制1行2列a;
+
+a.repeat(3, 2)表示复制3行2列个a；
+
+a.repeat(3, 2, 1)表示复制3个2行1列个a。
+
+
+
+作者：不太聪明的亚子
+链接：https://www.jianshu.com/p/206ef7cba355
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 
 
@@ -629,4 +731,163 @@ tensor([[ 1.2994, -1.0091,  0.1862],
 ![img](https://pic3.zhimg.com/80/v2-ff4e9a64d32fb17d7a770268582a970a_720w.jpg)
 
 摘抄自[知乎](https://zhuanlan.zhihu.com/p/358599463)
+
+
+
+### 2.18 torch.randn 和 torch.rand
+
+```
+torch.randn(*sizes, out=None) → Tensor
+
+```
+
+返回一个包含了从**标准正态分布**中抽取的一组随机数的张量
+
+size：张量的形状，
+
+out:结果张量。（目前还没有看到使用这个参数的例子）
+
+```
+torch.rand(*sizes, out=None) → Tensor
+```
+
+但是它是**[0,1)之间的均匀分布**
+
+[博客](https://www.cnblogs.com/jiading/p/11944458.html)
+
+
+
+### 2.19 tensor.masked_fill_(mask,value)
+
+masked_fill方法有两个参数，maske和value，mask是一个pytorch张量（Tensor），元素是布尔值，value是要填充的值，填充规则是mask中取值为True位置对应于self的相应位置用value填充
+
+```
+>>> t = torch.randn(3,2)
+>>> t
+tensor([[-0.9180, -0.4654],
+        [ 0.9866, -1.3063],
+        [ 1.8359,  1.1607]])
+>>> m = torch.randint(0,2,(3,2))
+>>> m
+tensor([[0, 1],
+        [1, 1],
+        [1, 0]])
+>>> m == 0
+tensor([[ True, False],
+        [False, False],
+        [False,  True]])
+>>> t.masked_fill(m == 0, -1e9)
+tensor([[-1.0000e+09, -4.6544e-01],
+        [ 9.8660e-01, -1.3063e+00],
+        [ 1.8359e+00, -1.0000e+09]])
+```
+
+csdn的[anshiquanshu](https://blog.csdn.net/anshiquanshu/article/details/111376283)
+
+
+
+### 2.19 torch.einsum
+
+三条基本规则
+
+首先看下 einsum 实现矩阵乘法的例子：
+
+```
+a = torch.rand(2,3)
+b = torch.rand(3,4)
+c = torch.einsum("ik,kj->ij", [a, b])
+# 等价操作 torch.mm(a, b)
+```
+
+其中需要重点关注的是 einsum 的第一个参数 "ik,kj->ij"，该字符串（下文以 equation 表示）表示了输入和输出张量的维度。equation 中的箭头左边表示输入张量，以逗号分割每个输入张量，箭头右边则表示输出张量。表示维度的字符只能是26个英文字母 'a' - 'z'。
+
+而 einsum 的第二个参数表示实际的输入张量列表，其数量要与 equation 中的输入数量对应。同时对应每个张量的 子 equation 的字符个数要与张量的真实维度对应，比如 "ik,kj->ij" 表示输入和输出张量都是两维的。
+
+equation  中的字符也可以理解为索引，就是输出张量的某个位置的值，是怎么从输入张量中得到的，比如上面矩阵乘法的输出 c 的某个点 c[i, j] 的值是通过 a[i, k] 和 b[i, k] 沿着 k 这个维度做内积得到的。
+
+接着介绍两个基本概念，自由索引（ *Free indices* ）和求和索引（ *Summation indices* ）：
+
+- 自由索引，出现在箭头右边的索引，比如上面的例子就是 i 和 j；
+- 求和索引，只出现在箭头左边的索引，表示中间计算结果需要这个维度上求和之后才能得到输出，比如上面的例子就是 k；
+
+接着是介绍三条基本规则：
+
+- 规则一，equation 箭头左边，在 **不同** 输入之间重复出现的索引表示，把输入张量沿着该维度做乘法操作，比如还是以上面矩阵乘法为例， "ik,kj->ij"，k 在输入中重复出现，所以就是把 a 和 b 沿着 k 这个维度作相乘操作；
+- 规则二，只出现在 equation 箭头左边的索引，表示中间计算结果需要在这个维度上求和，也就是上面提到的求和索引；
+- 规则三，equation 箭头右边的索引顺序可以是任意的，比如上面的 "ik,kj->ij" 如果写成 "ik,kj->ji"，那么就是返回输出结果的转置，用户只需要定义好索引的顺序，转置操作会在 einsum 内部完成。
+
+> https://www.freeaihub.com/post/105614.html
+
+
+
+### 2.20 torch.split()
+
+```
+torch.split(tensor, split_size_or_sections, dim=0)
+```
+
+  torch.split()作用将tensor分成块结构。
+
+参数：
+
+tesnor：input，待分输入
+split_size_or_sections：需要切分的大小(int or list )
+dim：切分维度
+output：切分后块结构 <class 'tuple'>
+当split_size_or_sections为int时，tenor结构和split_size_or_sections，正好匹配，那么ouput就是大小相同的块结构。如果按照split_size_or_sections结构，tensor不够了，那么就把剩下的那部分做一个块处理。
+当split_size_or_sections 为list时，那么tensor结构会一共切分成len(list)这么多的小块，每个小块中的大小按照list中的大小决定，其中list中的数字总和应等于该维度的大小，否则会报错（注意这里与split_size_or_sections为int时的情况不同）。
+————————————————
+版权声明：本文为CSDN博主「skycrygg」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/qq_42518956/article/details/103882579
+
+- **split_size_or_sections为\**int\**型时**
+
+```
+import torch
+ 
+x = torch.rand(4,8,6)
+y = torch.split(x,2,dim=0) #按照4这个维度去分，每大块包含2个小块
+for i in y :
+    print(i.size())
+ 
+output:
+torch.Size([2, 8, 6])
+torch.Size([2, 8, 6])
+ 
+y = torch.split(x,3,dim=0)#按照4这个维度去分，每大块包含3个小块
+for i in y:
+    print(i.size())
+ 
+output:
+torch.Size([3, 8, 6])
+torch.Size([1, 8, 6])
+```
+
+-  **split_size_or_sections为\**list\**型时。**
+
+```
+import torch
+ 
+x = torch.rand(4,8,6)
+y = torch.split(x,[2,3,3],dim=1)
+for i in y:
+    print(i.size())
+ 
+output:
+torch.Size([4, 2, 6])
+torch.Size([4, 3, 6])
+torch.Size([4, 3, 6])
+ 
+ 
+y = torch.split(x,[2,1,3],dim=1) #2+1+3 等于6 != 8 ,报错
+for i in y:
+    print(i.size())
+ 
+output:
+split_with_sizes expects split_sizes to sum exactly to 8 (input tensor's size at dimension 1), but got split_sizes=[2, 1, 3]
+```
+
+ps:与torch.chunk不一样，chunk的第二个参数均匀分割的份数，如果该tensor在你要进行分割的维度上的size不能被chunks整除，则最后一份会略小（也可能为空）
+
+参考自[博客园](https://www.cnblogs.com/moon3/p/12685911.html)，注意，博客园关于torch.split说错了一点，当第二个参数为int类型时，并不是均匀分割的份数，而是按该int数值进行分割。
 

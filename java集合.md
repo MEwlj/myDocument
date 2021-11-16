@@ -498,3 +498,72 @@ Set entrySet()：返回所有key-value对构成的Set集合
     }
 ```
 
+### 4.2.1 map.getOrDefault(Object key, V defaultValue)
+
+- getOrDefault() 方法获取指定 key 对应对 value，如果找不到 key ，则返回设置的默认值。
+
+```
+import java.util.HashMap;
+
+class Main {
+    public static void main(String[] args) {
+        // 创建一个 HashMap
+        HashMap<Integer, String> sites = new HashMap<>();
+
+        // 往 HashMap 添加一些元素
+        sites.put(1, "Google");
+        sites.put(2, "Runoob");
+        sites.put(3, "Taobao");
+        System.out.println("sites HashMap: " + sites);
+
+        // key 的映射存在于 HashMap 中
+        // Not Found - 如果 HashMap 中没有该 key，则返回默认值
+        String value1 = sites.getOrDefault(1, "Not Found");
+        System.out.println("Value for key 1:  " + value1);
+
+        // key 的映射不存在于 HashMap 中
+        // Not Found - 如果 HashMap 中没有该 key，则返回默认值
+        String value2 = sites.getOrDefault(4, "Not Found");
+        System.out.println("Value for key 4: " + value2);
+    }
+}
+```
+
+执行结果
+
+```
+Value for key 1:  Google
+Value for key 4: Not Found
+```
+
+[菜鸟教程](https://www.runoob.com/java/java-hashmap-getordefault.html)
+
+
+
+# 5.小技巧
+
+## 5.1 Set<Character>set = map.keySet();
+
+- 利用keySet()返回key
+
+- 这儿加了一个泛型，返回的set就为Character类型了，如果不加泛型，返回的类型就为object类型。比如在力扣383题中：
+
+```
+        Set<Character>set = map.keySet();
+        for(Character key:set){
+            if(map2.containsKey(key)&&(map2.get(key)>=map.get(key))){
+                continue;
+            }else{
+                return false;
+            }
+        }
+```
+
+必须加了泛型，才能进行遍历，否则就会报错
+
+```
+Line 16: error: incompatible types: Object cannot be converted to Character
+        for(Character key:set){
+                          ^
+```
+
