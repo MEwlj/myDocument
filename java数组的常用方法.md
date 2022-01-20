@@ -52,3 +52,14 @@ class Solution {
 }
 ```
 
+
+
+# 4.Arrays.fill( a1, value)
+
+a1是一个数组变量，value是一个a1中元素数据类型的值，作用：填充a1数组中的每个元素都是value
+
+```
+int[] f = new int[n];
+Arrays.fill(f, 1);
+```
+

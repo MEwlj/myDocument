@@ -49,3 +49,15 @@ String str = "123";
 char res = str.charAt(1);// res = '2'
 ```
 
+
+
+## 1.6 str.toCharArray()
+
+将字符串转化为字符数组
+
+```
+    public int longestPalindrome(String s) {
+        char[] arr = s.toCharArray();
+    }
+```
+

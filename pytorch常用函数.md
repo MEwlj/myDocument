@@ -326,6 +326,14 @@ torch.sort(input, dim=None, descending=False, out=None) -> (Tensor, LongTensor)
 
 > https://pytorch-cn.readthedocs.io/zh/latest/package_references/torch/#torchsort
 
+ps: out中的第二个元素是一个列表，为排序后的每个元素在**原来列表**的索引
+
+[知乎](https://zhuanlan.zhihu.com/p/98010327)
+
+列表.index（x），返回的是**列表中**x所对应的索引，x是列表内的元素。
+
+
+
 ### 2.4 torch.FloatTensor()
 
 - 类型转换, 将list ,numpy转化为tensor。 以list -> tensor为例：
@@ -891,3 +899,44 @@ ps:与torch.chunk不一样，chunk的第二个参数均匀分割的份数，如�
 
 参考自[博客园](https://www.cnblogs.com/moon3/p/12685911.html)，注意，博客园关于torch.split说错了一点，当第二个参数为int类型时，并不是均匀分割的份数，而是按该int数值进行分割。
 
+
+
+### 2.21 torch.Tensor和torch.tensor
+
+- 建议用torch.tensor，因为此方法可以指定数据类型
+- 在Pytorch中，Tensor和tensor都用于生成新的张量
+
+详见[csdn](https://blog.csdn.net/weixin_42018112/article/details/91383574)
+
+
+
+### 2.21 torch.cat()和torch.stack()
+
+- 最大的区别在于torch.stack会增加一个维度，且增加的维度为stack指定的维度。
+
+```
+torch.stack(inputs, dim=0)
+torch.cat(inputs, dim=0)
+```
+
+示例
+
+```
+x1 = torch.tensor([[1,2,3], [4,5,6]])# x1.shape = tensor.size([2,3])
+x2 = torch.tensor([[7,8,9], [10,11,12]])
+x = [x1, x2]
+print(x1.shape)
+# print(len(c), c[1].shape)
+print('沿第0维进行操作：')
+y1 = torch.stack(x, dim=0)
+y2 = torch.cat(x, dim=0)
+print('y1:', y1.shape,'\n',y1)
+print('y2:', y2.shape,'\n',y2)
+
+```
+
+结尾y1的大小为（2,2,3），y2为（4,3）。
+
+[csdn](https://blog.csdn.net/weixin_42920104/article/details/105833691)
+
+补充，torch.cat和stack的arguement1，也可以被小括号括着。
