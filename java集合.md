@@ -207,7 +207,7 @@ System.out.println(coll.hashCode());
 
 
 
-ps：此时输出的array的类型并不是固定的，因为是一个Object类型的数组
+ps：此时输出的array的类型并不是固定的，因为是一个Object类型的数组，应该是用到了多态的思想。
 
 ![image-20210726164046114](./picture/java集合\image-20210726164046114.png)
 
@@ -275,11 +275,11 @@ ps：在集合后面的<>似乎可以省略掉。
 
 ![image-20210728111709934](./picture/java集合\image-20210728111709934.png)
 
-增：add(Object obj)
-删：remove(int index) / remove(Object obj)
-改：set(int index, Object ele)
-查：get(int index)
-插：add(int index, Object ele)
+增：add(Object obj)，返回布尔类型
+删：remove(int index) / remove(Object obj)  （构成了重载而不是重写，remove obj是coll的方法，返回布尔类型的值，remove idx是list的专属方法，返回idx的对象）
+改：set(int index, Object ele)，返回原idx的对象，有点类似于替换
+查：get(int index)，返回idx对象
+插：add(int index, Object ele)，此方法无返回值
 长度：size()
 遍历：① Iterator迭代器方式
      ② 增强for循环
